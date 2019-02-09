@@ -1,10 +1,21 @@
 const express = require('express');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const Recipe = require('./models/recipe');
 
 
 const app = express();
 
 
+mongoose.connect('mongodb+srv://mongo:3RnmqlX1L0gpfi7c@cluster0-jqp4b.mongodb.net/test?retryWrites=true')
+.then(() => {
+  console.log('successfully connected to mongoDB Atlas')
+}).catch((error) =>{
+  console.log('unable to connect to mongoDB atlas');
+  console.error(error);
+});
 
+// CORS
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
@@ -12,38 +23,37 @@ app.use((req, res, next) => {
     next();
   });
 
+app.use(bodyParser.json());
+
+
+app.post('/api/recipes', (req, res, next) =>{
+  const recipe = new Recipe({
+    title: req.body.title,
+    ingredients: req.body.ingredients,
+    instructions: req.body.instructions,
+    difficulty: req.body.difficulty,
+    time: req.body.time,
+  });
+  recipe.save().then(() =>{
+    res.status(201).json({
+      message: 'post was created successfully'
+    })
+  }).catch((error) =>{
+    res.status(404).json({
+      error: error
+    });
+  });
+});
 
 
 app.use('/api/recipes', (req,res,next) =>{
-    const recipes = [
-        {
-            title: 'recipe 1',
-            ingredients: 'tomato, beef meat,oil',
-            instructions: 'prepare all the ingredients and get soucepans and gas and cook',
-            difficulty: 'it takes time more that 40 minutes',
-            time: 50,
-            _id: 'jjsdjsj',
-          },
-          {
-            title: 'recipe 2',
-            ingredients: 'irish potato,oil',
-            instructions: 'prepare all the ingredients and get soucepans and gas and cook',
-            difficulty: 'it takes time more than 20 minutes',
-            time: 24,
-            _id: 'ysefa',
-          },
-          {
-            title: 'recipe 1',
-            ingredients: 'tomato, rice,oil, salt',
-            instructions: 'prepare all the ingredients and get soucepans and gas and cook',
-            difficulty: 'it takes time more than 25 minutes',
-            time: 30,
-            _id: 'djskd',
-          },
-          
-          
-    ];
-    res.status(200).json(recipes);
+   Recipe.find().then((recipes) =>{
+     res.status(200).json(recipes);
+   }).catch((error) =>{
+     res.status(404).json({
+       error: error
+     });
+   });
 });
 
 
