@@ -6,7 +6,7 @@ const Recipe = require('./models/recipe');
 const app = express();
 
 
-mongoose.connect('mongodb+srv://mongo:3RnmqlX1L0gpfi7c@cluster0-jqp4b.mongodb.net/test?retryWrites=true')
+mongoose.connect('mongodb+srv://mongo:OOwl7SD3tDCQh2by@cluster0-jqp4b.mongodb.net/test?retryWrites=true')
 .then(() => {
   console.log('successfully connected to mongoDB Atlas')
 }).catch((error) =>{
